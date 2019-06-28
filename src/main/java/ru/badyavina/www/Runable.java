@@ -82,7 +82,10 @@ public class Runable {
  * 
  */
 /*
-cd C:/
- 
+cd C:/Users/svladimirov/eclipse-workspace/ru.badyavina.www
+
+git add .
+git commit -m "first commit"
+git push -u origin master
  
  */
