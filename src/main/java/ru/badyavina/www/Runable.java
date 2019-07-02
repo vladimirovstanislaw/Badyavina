@@ -2,71 +2,70 @@ package ru.badyavina.www;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import ru.badyavina.www.configure.files.Nomenclature;
+import ru.badyavina.www.configure.files.Upload;
+import ru.badyavina.www.rows.RowAsIs;
+
 public class Runable {
 	public static void main(String[] args) throws IOException {
-		
-		if(args.length!=0) {
-			System.out.println("vas'ka");
-		}
-		
-		Parser parser = new Parser();
 
-		File myFile = new File("C:\\vianor_stock\\Остатки 18.06.19.xlsx");
-		FileInputStream fis = new FileInputStream(myFile);
+		if (args.length != 0) {
 
-		// Finds the workbook instance for XLSX file
-		XSSFWorkbook myWorkBook = new XSSFWorkbook(fis);
+			String path_from = args[0];
+			String path_to = args[1];
+			String fileNameUpload = args[2];
 
-		// Return first sheet from the XLSX workbook
-		XSSFSheet mySheet = myWorkBook.getSheetAt(0);
+			File folder = new File(path_from);
 
-		// Get iterator to all the rows in current sheet
-		Iterator<Row> rowIterator = mySheet.iterator();
-
-		// Traversing over each row of XLSX file
-		while (rowIterator.hasNext()) {
-			Row row = rowIterator.next();
-			
-			// For each row, iterate through each columns
-			Iterator<Cell> cellIterator = row.cellIterator();
-			while (cellIterator.hasNext()) {
-
-				
-				
-				
-				Cell cell = cellIterator.next();
-
-//				if(cell.getCellType() == cell.CELL_TYPE_BLANK)
-//				{
-//					break;
-//				}
-				
-				
-				switch (cell.getCellType()) {
-				case Cell.CELL_TYPE_STRING:
-					System.out.print(cell.getStringCellValue() + "\t");
-					break;
-				case Cell.CELL_TYPE_NUMERIC:
-					System.out.print(cell.getNumericCellValue() + "\t");
-					break;
-				case Cell.CELL_TYPE_BOOLEAN:
-					System.out.print(cell.getBooleanCellValue() + "\t");
-					break;
-				default:
-
+			File[] matchingFiles = folder.listFiles(new FilenameFilter() {
+				public boolean accept(File dir, String name) {
+					return name.matches("( )*(Остатки)( )*[0-9]*.[0-9]*.[0-9]*( )*.(xlsx)") && name.endsWith(".xlsx");
 				}
-			}
-			System.out.println("");
-		}
+			});
 
+			String pathFromFull = path_from + "\\" + matchingFiles[0].getName();
+
+			//System.out.println(pathFromFull);
+
+			Map<String, RowAsIs> mapAsIs;
+			Parser parser = Parser.getParserInstance();
+			parser.setFilenameFrom(pathFromFull);
+			mapAsIs = parser.Parse();
+
+			Nomenclature nomenclature = Nomenclature.getInstanceNomenclature();
+			nomenclature.setMapAsIs(mapAsIs);
+			nomenclature.configureNomenclatureMap();
+			Date date = new Date();
+			nomenclature.writeFile(path_to + "\\Nomenclature_" + date.getDate() + "_" + date.getMonth() + "_"
+					+ (date.getYear() + 1900) + ".csv");
+			Upload upload = Upload.getInstanceUpload();
+			upload.setMapAsIs(mapAsIs);
+			upload.configureUploadMap();
+			upload.writeFile(path_to + "\\" + fileNameUpload);
+			
+			
+			Sender sender = new Sender();
+			sender.setFrom(pathFromFull);
+			sender.send();
+			
+
+			System.out.println("Выход [Enter]: ");
+		} else {
+
+			System.out.println("Не установлены параметры запуска.");
+		}
 	}
 
 }
@@ -82,10 +81,10 @@ public class Runable {
  * 
  */
 /*
-cd C:/Users/svladimirov/eclipse-workspace/ru.badyavina.www
-
-git add .
-git commit -m "first commit"
-git push -u origin master
- 
+  cd C:/Users/svladimirov/eclipse-workspace/ru.badyavina.www
+  
+  git add . 
+  git commit -m "first commit" 
+  git push -u origin master
+  
  */
