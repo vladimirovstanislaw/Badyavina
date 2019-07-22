@@ -7,9 +7,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.poi.ss.usermodel.Row;
-
-import ru.badyavina.www.rows.RowAsIs;
+import ru.badyavina.www.rows.AllDataRow;
 
 public class Nomenclature {
 	private static Nomenclature nomenclature = new Nomenclature();
@@ -18,7 +16,7 @@ public class Nomenclature {
 	private static final String replaceWith = "";
 	private final Pattern p = Pattern.compile("( )*$");
 
-	Map<String, RowAsIs> mapAsIs;
+	Map<String, AllDataRow> allDataMap;
 	Map<String, String> mapNomenclature;
 	String finalData;
 
@@ -32,25 +30,16 @@ public class Nomenclature {
 		return nomenclature;
 	}
 
-	public void setMapAsIs(Map<String, RowAsIs> map) {
-		this.mapAsIs = map;
+	public void setMapAsIs(Map<String, AllDataRow> map) {
+		this.allDataMap = map;
 	}
 
 	public void configureNomenclatureMap() {
-		if (mapAsIs != null) {
-			mapAsIs.forEach((k, v) -> {
-				if (k.toString().endsWith(" ")) {
-					Matcher m = p.matcher(k);
-					String output = m.replaceAll(replaceWith);
-					mapNomenclature.put(output.replace(" ", "_").toLowerCase(), k);
-				} else {
-					mapNomenclature.put(k.toString().replace(" ", "_").toLowerCase(), k);
-				}
-
+		if (allDataMap != null) {
+			allDataMap.entrySet().stream().forEach(e->{
+				mapNomenclature.put(e.getKey(),e.getValue().getName());
 			});
-			// mapNomenclature.forEach((k, v) -> System.out.println("\t" + k + "\t" + v));
-			
-			System.out.println("NomenclatureMap.count = "+ mapNomenclature.size());
+					
 		}
 	}
 

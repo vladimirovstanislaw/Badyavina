@@ -1,35 +1,27 @@
 package ru.badyavina.www.rows;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.poi.ss.usermodel.Row;
-
 public class RowUpload {
-	String name;
+	String code;
 	String price;
-	String leftovers;
-	private static final Pattern p = Pattern.compile(",|.[0-9]*( )*$");
-	private static Matcher m = null;
-	private static final String replaceWith = "";
+	String leftOver;
 
 	public RowUpload() {
 		super();
 	}
 
-	public RowUpload(String name, String price, String leftovers) {
+	public RowUpload(String code, String price, String leftovers) {
 		super();
-		this.name = name;
+		this.code = code;
 		this.price = price;
-		this.leftovers = leftovers;
+		this.leftOver = leftovers;
 	}
 
-	public String getName() {
-		return name;
+	public String getCode() {
+		return code;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	public String getPrice() {
@@ -37,22 +29,22 @@ public class RowUpload {
 	}
 
 	public void setPrice(String price) {
-		m = p.matcher(price);
-		this.price = m.replaceAll(replaceWith);
+
+		this.price = price;
 	}
 
 	public String getLeftovers() {
-		return leftovers;
+		return leftOver;
 	}
 
-	public void setLeftovers(String leftovers) {
-		m = p.matcher(leftovers);
-		this.leftovers = m.replaceAll(replaceWith);
+	public void setLeftovers(String leftOver) {
+
+		this.leftOver = leftOver;
 	}
 
 	@Override
 	public String toString() {
-		return "RowUpload [name = " + name + ", price = " + price + ", leftovers = " + leftovers + "]";
+		return "RowUpload [name = " + code + ", price = " + price + ", leftovers = " + leftOver + "]";
 	}
 
 }
