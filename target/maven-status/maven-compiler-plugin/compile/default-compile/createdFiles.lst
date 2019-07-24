@@ -6,6 +6,7 @@ ru\badyavina\www\rows\CentralProviderRow.class
 ru\badyavina\www\Parser.class
 ru\badyavina\www\Sftp$MyUserInfo.class
 ru\badyavina\www\Runable$1.class
+ru\badyavina\www\confOnly.class
 ru\badyavina\www\Runable.class
 ru\badyavina\www\configure\files\Upload.class
 ru\badyavina\www\rows\RowNomenclature.class

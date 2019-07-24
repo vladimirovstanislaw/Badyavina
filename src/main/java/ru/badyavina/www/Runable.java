@@ -142,28 +142,10 @@ public class Runable {
 		File file = new File(fileName);
 		Date now = new Date();
 
-		long howOldIsSource = (now.getTime() - file.lastModified()) / (86400);
-		if (howOldIsSource <= 1) {
+		double howOldIsSource = (now.getTime() - file.lastModified()) / (86400);
+		if (howOldIsSource <= 1.5) {
 			return true;
 		}
 		return false;
 	}
 }
-
-/*
- * Примерный план: 1)Выгрузить номенклатуру 1.1) Нужно заменить все пробелы на
- * "_" 1.2) Выгружать номенклатуру дефолту каждый раз при выгрузке 2)распарсить
- * файл,записать его, отправить 2.1) Важно только читать файл, не изменяя его.
- * Так же нужно следить за дублями. 2.2) Просто записать в C:\. Приджоинить
- * поток записи, чтобы не допустить отправки перед записью. 2.3) Желательно
- * сделать нативно через java
- * 
- * 
- */
-/*
- cd C:/Users/svladimirov/eclipse-workspace/ru.badyavina.www
-  
-  git add . 
- git commit -m  "first commit" git push -u origin master
- 
- */
