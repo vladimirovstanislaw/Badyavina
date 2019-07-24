@@ -1,21 +1,14 @@
 package ru.badyavina.www;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import ru.badyavina.www.configure.files.Nomenclature;
 import ru.badyavina.www.configure.files.Upload;
 import ru.badyavina.www.rows.AllDataRow;
@@ -41,6 +34,13 @@ public class Runable {
 			String lastFileOtherProvider = getLastModifiedFileNameByType(OTHER_TYPE);
 
 			String lastFileCentralProvider = getLastModifiedFileNameByType(CENTRAL_TYPE);
+
+			// проверяем, подходят ли нам по времени эти файлы
+			if (isFileAcceptedByTime(lastFileOtherProvider) != true
+					|| isFileAcceptedByTime(lastFileCentralProvider) != true) {
+				System.out.println("Source file's is too old. Get a new source.");
+				return;
+			}
 
 			// Начинаем парсить
 //			Map<String, EntityAsIs> mapAsIs;
@@ -136,15 +136,18 @@ public class Runable {
 		return lastFile.getPath();
 
 	}
-//
-//	public String getCentralProviderFileName(String from) {
-//
-//	}
-//
-//	public String getLastModifiedFileName(String from) {
-//
-//	}
 
+	public static boolean isFileAcceptedByTime(String fileName) {
+
+		File file = new File(fileName);
+		Date now = new Date();
+
+		long howOldIsSource = (now.getTime() - file.lastModified()) / (86400);
+		if (howOldIsSource <= 1) {
+			return true;
+		}
+		return false;
+	}
 }
 
 /*
@@ -158,10 +161,9 @@ public class Runable {
  * 
  */
 /*
-  cd C:/Users/svladimirov/eclipse-workspace/ru.badyavina.www
+ cd C:/Users/svladimirov/eclipse-workspace/ru.badyavina.www
   
   git add . 
-  git commit -m "first commit" 
-  git push -u origin master
-  
+ git commit -m  "first commit" git push -u origin master
+ 
  */
