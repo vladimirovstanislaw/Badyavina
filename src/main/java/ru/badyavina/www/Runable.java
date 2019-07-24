@@ -142,7 +142,8 @@ public class Runable {
 		File file = new File(fileName);
 		Date now = new Date();
 
-		double howOldIsSource = (now.getTime() - file.lastModified()) / (86400);
+		double howOldIsSource = (now.getTime() - file.lastModified()) / (86400000);
+
 		if (howOldIsSource <= 1.5) {
 			return true;
 		}
