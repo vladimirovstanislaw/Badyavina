@@ -5,10 +5,18 @@ public class confOnly {
  
  #Git
  
+ git pull
+ 
+ 
  cd C:/Users/svladimirov/eclipse-workspace/ru.badyavina.www
   
  git add . 
- git commit -m  "first commit" 
+ git reset -- main/resources/credentials.json
+ 
+ git reset -- main/resources/(web)client_id.json
+ git reset -- main/resources/service-key.json
+ 
+ git commit -m  "First test Gmail API" 
  git push -u origin master
  
  
