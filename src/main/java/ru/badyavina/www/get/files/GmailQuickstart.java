@@ -38,9 +38,9 @@ public class GmailQuickstart {
 	
 
 	private static Credential getCredential(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
-		InputStream in = GmailQuickstart.class.getResourceAsStream(CREDENTIALS_FILE_PATH_JOHNY);
+		InputStream in = GmailQuickstart.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
 		if (in == null) {
-			throw new FileNotFoundException("File not found :" + CREDENTIALS_FILE_PATH_JOHNY);
+			throw new FileNotFoundException("File not found :" + CREDENTIALS_FILE_PATH);
 		}
 		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY,
