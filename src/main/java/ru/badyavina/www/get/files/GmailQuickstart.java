@@ -31,11 +31,16 @@ public class GmailQuickstart {
 
 	private static final List<String> SCOPES = Collections.singletonList(GmailScopes.GMAIL_LABELS);
 	private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+	private static final String CREDENTIALS_FILE_PATH_WEB = "/(web)client_id.json";
+	private static final String CREDENTIALS_FILE_PATH_JOHNY = "/service-key.json";
+	
+	
+	
 
 	private static Credential getCredential(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
-		InputStream in = GmailQuickstart.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+		InputStream in = GmailQuickstart.class.getResourceAsStream(CREDENTIALS_FILE_PATH_JOHNY);
 		if (in == null) {
-			throw new FileNotFoundException("File not found :" + CREDENTIALS_FILE_PATH);
+			throw new FileNotFoundException("File not found :" + CREDENTIALS_FILE_PATH_JOHNY);
 		}
 		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY,
@@ -63,6 +68,9 @@ public class GmailQuickstart {
 				System.out.printf("- %s\n", label.getName());
 			}
 		}
+	}
+	public static void getFiles() {
+		
 	}
 
 }
