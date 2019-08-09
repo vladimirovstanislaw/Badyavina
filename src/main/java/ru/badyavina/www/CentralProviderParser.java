@@ -93,44 +93,6 @@ public class CentralProviderParser {
 
 		}
 
-		// For each row, iterate through each columns
-//			Iterator<Cell> cellIterator = row.cellIterator();
-//			while (cellIterator.hasNext()) {
-//
-//				Cell cell = cellIterator.next();
-//				switch (cell.getCellType()) {
-//				case Cell.CELL_TYPE_NUMERIC:
-//					System.out.print(
-//							"\t" + "cellID = " + cell.getColumnIndex() + "\t" + cell.getNumericCellValue() + "\t");
-//					if (cell.getColumnIndex() == 0 && cell.getNumericCellValue() == 3) {
-//
-//						CentralProviderRow tmpRow = new CentralProviderRow();
-//						if (row.getCell(1) == null || row.getCell(1).toString().equals("")) {
-//							break;
-//						} else {
-//							tmpRow.setCode(row.getCell(1).toString());
-//						}
-//
-//						if (row.getCell(8) == null || row.getCell(8).toString().equals("")) {
-//							break;
-//						} else {
-//							tmpRow.setLeftOver(row.getCell(8).toString());
-//						}
-//
-//						if (row.getCell(6) == null || row.getCell(6).toString().equals("")) {
-//							break;
-//						} else {
-//							tmpRow.setName(row.getCell(6).toString());
-//						}
-//						asIsCentralProviderMap.put();
-//
-//					}
-//					break;
-//				default:
-//
-//				}
-//			}
-
 		System.out.println("The number of CENTRAL rows = " + countAllRows);
 		myWorkBook.close();
 		return asIsCentralProviderMap;
