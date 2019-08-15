@@ -3,6 +3,7 @@ package ru.badyavina.www;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -11,42 +12,48 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import ru.badyavina.www.configure.files.Nomenclature;
 import ru.badyavina.www.configure.files.Upload;
+import ru.badyavina.www.get.files.GmailQuickstart;
 import ru.badyavina.www.rows.AllDataRow;
 import ru.badyavina.www.rows.CentralProviderRow;
 import ru.badyavina.www.rows.OtherProviderRow;
 
 public class Runable {
 
-	public static final String otherProviderFilePath = "C:\\vianor_stock\\OtherProvider";
-	public static final String centralProviderFilePath = "C:\\vianor_stock\\CentralProvider";
+	public static String otherProviderFilePath = "C:\\vianor_stock\\OtherProvider";
+	public static String centralProviderFilePath = "C:\\vianor_stock\\CentralProvider";
 	public static final String OTHER_TYPE = "other";
 	public static final String CENTRAL_TYPE = "central";
 	static int i = 0;
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, GeneralSecurityException {
 
 		if (args.length != 0) {
 
 			String path_from = args[0]; // Корневая папка
 			String path_to = args[1]; // Куда кладем .csv - выгрузку и номеклатуру
 			String fileNameUpload = args[2]; // имя отправляемого файла
+			String pathToSaveCentralFiles = args[3]; // куда будем класть выгрузку central provider'a
+			String pathToSaveOtherFiles = args[4]; // куда будем класть выгрузку other provider'a
+			String emailCentralProvider = args[5]; // email cental provider
+			String emailOtherProvider = args[6]; // email other provider
+
+			otherProviderFilePath = pathToSaveOtherFiles;
+			centralProviderFilePath = pathToSaveCentralFiles;
+
+			GmailQuickstart gmail = new GmailQuickstart(pathToSaveCentralFiles, pathToSaveOtherFiles,
+					emailCentralProvider, emailOtherProvider);
+
+			File folderCentral = new File(pathToSaveCentralFiles);
+			File folderOther = new File(pathToSaveOtherFiles);
+
+			GmailQuickstart.clearFolder(folderCentral);// очищаем папку central provider'a
+			GmailQuickstart.clearFolder(folderOther);// очищаем папку other provider'a
+
+			gmail.run();
 
 			String lastFileOtherProvider = getLastModifiedFileNameByType(OTHER_TYPE);
 
 			String lastFileCentralProvider = getLastModifiedFileNameByType(CENTRAL_TYPE);
-
-			// проверяем, подходят ли нам по времени эти файлы
-			if (isFileAcceptedByTime(lastFileOtherProvider) != true
-					|| isFileAcceptedByTime(lastFileCentralProvider) != true) {
-				System.out.println("Source file's is too old. Get a new source.");
-				return;
-			}
-
-			// Начинаем парсить
-//			Map<String, EntityAsIs> mapAsIs;
-//			Parser parser = Parser.getParserInstance();
-//			parser.setFilenameFrom(pathFromFull);
-//			mapAsIs = parser.Parse();
 
 			// Парсим файл поставщика по-меньше
 			OhterProviderParser otherParser = OhterProviderParser.getInstance();
@@ -79,10 +86,6 @@ public class Runable {
 				allDataMap.put(e.toString(), tmpRow);
 
 			});
-//			allDataMap.entrySet().stream().forEach(e -> {
-//				System.out.println(e.getKey().toString() + "\t" + e.getValue().getCode() + "\t"
-//						+ e.getValue().getLeftOver() + "\t" + e.getValue().getRetailPrice());
-//			});
 
 			// Конфигурируем файл номенклатуры
 			Nomenclature nomenclature = Nomenclature.getInstanceNomenclature();
@@ -106,6 +109,7 @@ public class Runable {
 
 			System.out.println("Не установлены параметры запуска.");
 		}
+
 	}
 
 	public static String getLastModifiedFileNameByType(String type) {
