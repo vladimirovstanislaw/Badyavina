@@ -3,6 +3,7 @@ ru\badyavina\www\Sftp.class
 ru\badyavina\www\rows\RowUpload.class
 ru\badyavina\www\OhterProviderParser.class
 ru\badyavina\www\rows\CentralProviderRow.class
+ru\badyavina\www\get\files\GmailQuickstart.class
 ru\badyavina\www\Parser.class
 ru\badyavina\www\Sftp$MyUserInfo.class
 ru\badyavina\www\Runable$1.class
