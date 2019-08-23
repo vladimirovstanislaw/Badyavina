@@ -42,16 +42,26 @@ public class Runable {
 
 			File folderCentral = new File(pathToSaveCentralFiles);
 			File folderOther = new File(pathToSaveOtherFiles);
-			
-			GmailQuickstart gmail = new GmailQuickstart(pathToSaveCentralFiles, pathToSaveOtherFiles,
-					emailCentralProvider, emailOtherProvider);
 
 			
+			
+//									    ||
+//									    ||
+			//Uncomment that after test ||
+//									   \  /
+//										\/
+			
 
-			GmailQuickstart.clearFolder(folderCentral);// очищаем папку central provider'a
-			GmailQuickstart.clearFolder(folderOther);// очищаем папку other provider'a
-
-			gmail.run();
+			
+//			GmailQuickstart gmail = new GmailQuickstart(pathToSaveCentralFiles, pathToSaveOtherFiles,
+//					emailCentralProvider, emailOtherProvider);
+//
+//			
+//
+//			GmailQuickstart.clearFolder(folderCentral);// очищаем папку central provider'a
+//			GmailQuickstart.clearFolder(folderOther);// очищаем папку other provider'a
+//
+//			gmail.run();
 
 			String lastFileOtherProvider = getLastModifiedFileNameByType(OTHER_TYPE);
 

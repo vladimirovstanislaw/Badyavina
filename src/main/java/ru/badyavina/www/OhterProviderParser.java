@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -39,10 +41,10 @@ public class OhterProviderParser {
 		FileInputStream fis = new FileInputStream(myFile);
 
 		// Finds the workbook instance for XLSX file
-		XSSFWorkbook myWorkBook = new XSSFWorkbook(fis);
+		HSSFWorkbook myWorkBook = new HSSFWorkbook(fis);
 
 		// Return first sheet from the XLSX workbook
-		XSSFSheet mySheet = myWorkBook.getSheetAt(0);
+		HSSFSheet mySheet = myWorkBook.getSheetAt(0);
 
 		// Get iterator to all the rows in current sheet
 		Iterator<Row> rowIterator = mySheet.iterator();
