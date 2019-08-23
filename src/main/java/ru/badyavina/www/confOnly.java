@@ -8,7 +8,7 @@ public class confOnly {
  git pull
  
  
- cd C:/Users/svladimirov/eclipse-workspace/ru.badyavina.www
+ cd C:/Users/svladimirov/eclipse-workspace/bad/Badyavina
   
  git add . 
  git reset -- 'main/resources/other_app_bad.json'
