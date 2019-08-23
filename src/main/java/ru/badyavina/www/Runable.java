@@ -40,11 +40,13 @@ public class Runable {
 			otherProviderFilePath = pathToSaveOtherFiles;
 			centralProviderFilePath = pathToSaveCentralFiles;
 
+			File folderCentral = new File(pathToSaveCentralFiles);
+			File folderOther = new File(pathToSaveOtherFiles);
+			
 			GmailQuickstart gmail = new GmailQuickstart(pathToSaveCentralFiles, pathToSaveOtherFiles,
 					emailCentralProvider, emailOtherProvider);
 
-			File folderCentral = new File(pathToSaveCentralFiles);
-			File folderOther = new File(pathToSaveOtherFiles);
+			
 
 			GmailQuickstart.clearFolder(folderCentral);// очищаем папку central provider'a
 			GmailQuickstart.clearFolder(folderOther);// очищаем папку other provider'a
@@ -124,7 +126,8 @@ public class Runable {
 		}
 		File[] matchingFiles = folder.listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-				return name.endsWith(".xlsx");
+				System.out.println(dir.toString()+name);
+				return name.endsWith(".xls");
 			}
 		});
 		File lastFile = matchingFiles[0];
@@ -141,16 +144,16 @@ public class Runable {
 
 	}
 
-	public static boolean isFileAcceptedByTime(String fileName) {
-
-		File file = new File(fileName);
-		Date now = new Date();
-
-		double howOldIsSource = (now.getTime() - file.lastModified()) / (86400000);
-
-		if (howOldIsSource <= 1.5) {
-			return true;
-		}
-		return false;
-	}
+//	//public static boolean isFileAcceptedByTime(String fileName) {
+//
+//		File file = new File(fileName);
+//		Date now = new Date();
+//
+//		double howOldIsSource = (now.getTime() - file.lastModified()) / (86400000);
+//
+//		if (howOldIsSource <= 1.5) {
+//			return true;
+//		}
+//		return false;
+//	}
 }
