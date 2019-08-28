@@ -88,8 +88,6 @@ public class GmailQuickstart {
 
 		String queryFromCentralProvider = "from:" + emailCentralProvider;
 		String queryFromOtherProvider = "from:" + emailOtherProvider;
-		System.out.println(queryFromCentralProvider);
-		System.out.println(queryFromOtherProvider);
 
 		ArrayList<Message> messageListCentral = listMessagesMatchingQuery(service, user, queryFromCentralProvider);
 		getFiles(service, user, messageListCentral, pathToSaveCentralFiles + "\\", CENTRAL_TYPE);
@@ -104,6 +102,7 @@ public class GmailQuickstart {
 
 		if (type == CENTRAL_TYPE) {
 			ArrayList<Message> fullMessageList = new ArrayList<Message>();
+			ArrayList<Message> fullMessageLastList = new ArrayList<Message>();
 			for (int i = 0; i < 3; i++) {// Можно поменять
 				Message fullLastMessage_tmp = service.users().messages().get(userId, list.get(i).getId()).execute();
 				fullMessageList.add(fullLastMessage_tmp);
@@ -113,13 +112,14 @@ public class GmailQuickstart {
 				for (MessagePartHeader header : headerList) {
 					if (header.getName().equals("Subject")) {
 						if (header.getValue().contains("ШИНЫ")) {
-							lastMessage = msg;
+							fullMessageLastList.add(msg);
 						}
 
 					}
 
 				}
 			}
+			lastMessage = fullMessageLastList.get(0);
 		}
 		if (type == OTHER_TYPE) {
 			ArrayList<Message> fullOtherMessageList = new ArrayList<Message>();
@@ -127,23 +127,8 @@ public class GmailQuickstart {
 				Message fullLastMessage_tmp = service.users().messages().get(userId, list.get(i).getId()).execute();
 				fullOtherMessageList.add(fullLastMessage_tmp);
 			}
-			System.out.println("Type = " + type);
 			lastMessage = fullOtherMessageList.get(0);
-			for (Message msg : fullOtherMessageList) {
 
-				List<MessagePartHeader> otherHeaderList = msg.getPayload().getHeaders();
-				for (MessagePartHeader header : otherHeaderList) {
-					if (header.getName().equals("Subject")) {
-						System.out.println("Other emails subject value: " + header.getValue());
-
-					}
-					if (header.getName().equals("From")) {
-						System.out.println("Other emails from value: " + header.getValue());
-
-					}
-
-				}
-			}
 		}
 
 		if (lastMessage == null) {
@@ -168,7 +153,6 @@ public class GmailQuickstart {
 				fileOutFile.write(fileByteArray);
 				fileOutFile.close();
 			}
-			System.out.println("One part done");
 		}
 
 	}

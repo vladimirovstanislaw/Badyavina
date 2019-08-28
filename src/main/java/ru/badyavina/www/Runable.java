@@ -1,6 +1,9 @@
 package ru.badyavina.www;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -8,6 +11,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import ru.badyavina.www.configure.files.Nomenclature;
@@ -29,11 +34,11 @@ public class Runable {
 
 		if (args.length != 0) {
 
-			String path_from = args[0]; // Корневая папка
-			String path_to = args[1]; // Куда кладем .csv - выгрузку и номеклатуру
-			String fileNameUpload = args[2]; // имя отправляемого файла
-			String pathToSaveCentralFiles = args[3]; // куда будем класть выгрузку central provider'a
-			String pathToSaveOtherFiles = args[4]; // куда будем класть выгрузку other provider'a
+			String path_from = args[0]; // РљРѕСЂРЅРµРІР°СЏ РїР°РїРєР°
+			String path_to = args[1]; // РљСѓРґР° РєР»Р°РґРµРј .csv - РІС‹РіСЂСѓР·РєСѓ Рё РЅРѕРјРµРєР»Р°С‚СѓСЂСѓ
+			String fileNameUpload = args[2]; // РёРјСЏ РѕС‚РїСЂР°РІР»СЏРµРјРѕРіРѕ С„Р°Р№Р»Р°
+			String pathToSaveCentralFiles = args[3]; // РєСѓРґР° Р±СѓРґРµРј РєР»Р°СЃС‚СЊ РІС‹РіСЂСѓР·РєСѓ central provider'a
+			String pathToSaveOtherFiles = args[4]; // РєСѓРґР° Р±СѓРґРµРј РєР»Р°СЃС‚СЊ РІС‹РіСЂСѓР·РєСѓ other provider'a
 			String emailCentralProvider = args[5]; // email cental provider
 			String emailOtherProvider = args[6]; // email other provider
 
@@ -52,73 +57,72 @@ public class Runable {
 			GmailQuickstart gmail = new GmailQuickstart(pathToSaveCentralFiles, pathToSaveOtherFiles,
 					emailCentralProvider, emailOtherProvider);
 
-			GmailQuickstart.clearFolder(folderCentral);// очищаем папку central provider'a
-			GmailQuickstart.clearFolder(folderOther);// очищаем папку other provider'a
+			GmailQuickstart.clearFolder(folderCentral);// РѕС‡РёС‰Р°РµРј РїР°РїРєСѓ central provider'a
+			GmailQuickstart.clearFolder(folderOther);// РѕС‡РёС‰Р°РµРј РїР°РїРєСѓ other provider'a
 
 			gmail.run();
-
+			unzipOther(pathToSaveOtherFiles);
 			String lastFileCentralProvider = getLastModifiedFileNameByType(CENTRAL_TYPE);
 			String lastFileOtherProvider = getLastModifiedFileNameByType(OTHER_TYPE);
 
-			
-			
-			System.out.println("Resolved name of central provider file:"+lastFileCentralProvider);
-			System.out.println("Resolved name of other provider file:"+lastFileOtherProvider);
-			
-//
-//			// Парсим файл поставщика по-меньше
-//			OhterProviderParser otherParser = OhterProviderParser.getInstance();
-//			otherParser.setFilenameFrom(lastFileOtherProvider.toString()); // мапа с данными от другого поставщика
-//			Map<String, OtherProviderRow> otherMap = otherParser.Parse();
-//
-//			// Парсим файл центрального поставщика
-//			CentralProviderParser centralParser = CentralProviderParser.getInstance();
-//			centralParser.setFilenameFrom(lastFileCentralProvider.toString());
-//			Map<String, CentralProviderRow> centralMap = centralParser.Parse(); // мапа с данными от центрального
-//																				// поставщика
-//
-//			// находим пересечение карт
-//			Collection<String> intersection = CollectionUtils.intersection(otherMap.keySet(), centralMap.keySet());
-//
-//			Map<String, AllDataRow> allDataMap = new HashMap<String, AllDataRow>();
-//
-//			// добавляем пересечение
-//			intersection.stream().forEach(e -> {
-//				// Создаем объект
-//				AllDataRow tmpRow = new AllDataRow();
-//				// Вставляем код
-//				tmpRow.setCode(e.toString());
-//				// Вставляем имя
-//				tmpRow.setName(otherMap.get(e.toString()).getName());
-//				// Вставляем остатки
-//				tmpRow.setLeftOver(otherMap.get(e.toString()).getLeftOver());
-//				// Вставляем розничную цену
-//				tmpRow.setRetailPrice(centralMap.get(e.toString()).getRetailPrice());
-//				allDataMap.put(e.toString(), tmpRow);
-//
-//			});
-//
-//			// Конфигурируем файл номенклатуры
-//			Nomenclature nomenclature = Nomenclature.getInstanceNomenclature();
-//			nomenclature.setMapAsIs(allDataMap);
-//			nomenclature.configureNomenclatureMap();
-//			Date date = new Date();
-//			nomenclature.writeFile(path_to + "\\Nomenclature_" + date.getDate() + "_" + date.getMonth() + "_"
-//					+ (date.getYear() + 1900) + ".csv");
-//			// Конфигурируем файл выгрузки
-//			Upload upload = Upload.getInstanceUpload();
-//			upload.setMapAsIs(allDataMap);
-//			upload.configureUploadMap();
-//			upload.writeFile(path_to + "\\" + fileNameUpload);
-//			// Высылаем выгрузку
-//			Sender sender = new Sender();
-//			sender.setData(path_from, fileNameUpload);
-//			sender.send();
+			System.out.println("Resolved name of central provider file:" + lastFileCentralProvider);
+			System.out.println("Resolved name of other provider file:" + lastFileOtherProvider);
 
-			System.out.println("Выход [Enter]: ");
+
+			// РџР°СЂСЃРёРј С„Р°Р№Р» РїРѕСЃС‚Р°РІС‰РёРєР° РїРѕ-РјРµРЅСЊС€Рµ
+			OhterProviderParser otherParser = OhterProviderParser.getInstance();
+			otherParser.setFilenameFrom(lastFileOtherProvider.toString()); // РјР°РїР° СЃ РґР°РЅРЅС‹РјРё РѕС‚ РґСЂСѓРіРѕРіРѕ РїРѕСЃС‚Р°РІС‰РёРєР°
+			Map<String, OtherProviderRow> otherMap = otherParser.Parse();
+
+			// РџР°СЂСЃРёРј С„Р°Р№Р» С†РµРЅС‚СЂР°Р»СЊРЅРѕРіРѕ РїРѕСЃС‚Р°РІС‰РёРєР°
+			CentralProviderParser centralParser = CentralProviderParser.getInstance();
+			centralParser.setFilenameFrom(lastFileCentralProvider.toString());
+			Map<String, CentralProviderRow> centralMap = centralParser.Parse(); // РјР°РїР° СЃ РґР°РЅРЅС‹РјРё РѕС‚ С†РµРЅС‚СЂР°Р»СЊРЅРѕРіРѕ
+																				// РїРѕСЃС‚Р°РІС‰РёРєР°
+
+
+			// РЅР°С…РѕРґРёРј РїРµСЂРµСЃРµС‡РµРЅРёРµ РєР°СЂС‚
+			Collection<String> intersection = CollectionUtils.intersection(otherMap.keySet(), centralMap.keySet());
+
+			Map<String, AllDataRow> allDataMap = new HashMap<String, AllDataRow>();
+
+			// РґРѕР±Р°РІР»СЏРµРј РїРµСЂРµСЃРµС‡РµРЅРёРµ
+			intersection.stream().forEach(e -> {
+				// РЎРѕР·РґР°РµРј РѕР±СЉРµРєС‚
+				AllDataRow tmpRow = new AllDataRow();
+				// Р’СЃС‚Р°РІР»СЏРµРј РєРѕРґ
+				tmpRow.setCode(e.toString());
+				// Р’СЃС‚Р°РІР»СЏРµРј РёРјСЏ
+				tmpRow.setName(otherMap.get(e.toString()).getName());
+				// Р’СЃС‚Р°РІР»СЏРµРј РѕСЃС‚Р°С‚РєРё
+				tmpRow.setLeftOver(otherMap.get(e.toString()).getLeftOver());
+				// Р’СЃС‚Р°РІР»СЏРµРј СЂРѕР·РЅРёС‡РЅСѓСЋ С†РµРЅСѓ
+				tmpRow.setRetailPrice(centralMap.get(e.toString()).getRetailPrice());
+				allDataMap.put(e.toString(), tmpRow);
+
+			});
+
+			// РљРѕРЅС„РёРіСѓСЂРёСЂСѓРµРј С„Р°Р№Р» РЅРѕРјРµРЅРєР»Р°С‚СѓСЂС‹
+			Nomenclature nomenclature = Nomenclature.getInstanceNomenclature();
+			nomenclature.setMapAsIs(allDataMap);
+			nomenclature.configureNomenclatureMap();
+			Date date = new Date();
+			nomenclature.writeFile(path_to + "\\Nomenclature_" + date.getDate() + "_" + date.getMonth() + "_"
+					+ (date.getYear() + 1900) + ".csv");
+			// РљРѕРЅС„РёРіСѓСЂРёСЂСѓРµРј С„Р°Р№Р» РІС‹РіСЂСѓР·РєРё
+			Upload upload = Upload.getInstanceUpload();
+			upload.setMapAsIs(allDataMap);
+			upload.configureUploadMap();
+			upload.writeFile(path_to + "\\" + fileNameUpload);
+			// Р’С‹СЃС‹Р»Р°РµРј РІС‹РіСЂСѓР·РєСѓ
+			Sender sender = new Sender();
+			sender.setData(path_from, fileNameUpload);
+			sender.send();
+
+			System.out.println("Done. \u203E\\( \u25CF , \u25CF)/\u203E");
 		} else {
 
-			System.out.println("Не установлены параметры запуска.");
+			System.out.println("РќРµ СѓСЃС‚Р°РЅРѕРІР»РµРЅС‹ РїР°СЂР°РјРµС‚СЂС‹ Р·Р°РїСѓСЃРєР°.");
 		}
 
 	}
@@ -127,7 +131,7 @@ public class Runable {
 		File folder = null;
 		if (type.equals("other")) {
 
-			// Ищем нужный файл OTHER provider'а , кт был изменен последним
+			// РС‰РµРј РЅСѓР¶РЅС‹Р№ С„Р°Р№Р» OTHER provider'Р° , РєС‚ Р±С‹Р» РёР·РјРµРЅРµРЅ РїРѕСЃР»РµРґРЅРёРј
 			folder = new File(otherProviderFilePath);
 		}
 		if (type.equals("central")) {
@@ -135,7 +139,6 @@ public class Runable {
 		}
 		File[] matchingFiles = folder.listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-
 				return name.endsWith(".xls");
 			}
 		});
@@ -153,16 +156,46 @@ public class Runable {
 
 	}
 
-//	//public static boolean isFileAcceptedByTime(String fileName) {
-//
-//		File file = new File(fileName);
-//		Date now = new Date();
-//
-//		double howOldIsSource = (now.getTime() - file.lastModified()) / (86400000);
-//
-//		if (howOldIsSource <= 1.5) {
-//			return true;
-//		}
-//		return false;
-//	}
+	public static void unzipOther(String path) throws IOException {
+		File folder = null;
+		folder = new File(otherProviderFilePath);
+		File[] matchingFiles = folder.listFiles(new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+
+				return name.endsWith(".zip");
+			}
+		});
+
+		String fileZip = matchingFiles[0].toString();
+
+		byte[] buffer = new byte[1024];
+		ZipInputStream zis = new ZipInputStream(new FileInputStream(fileZip));
+		ZipEntry zipEntry = zis.getNextEntry();
+		while (zipEntry != null) {
+			File newFile = newFile(folder, zipEntry);
+			FileOutputStream fos = new FileOutputStream(newFile);
+			int len;
+			while ((len = zis.read(buffer)) > 0) {
+				fos.write(buffer, 0, len);
+			}
+			fos.close();
+			zipEntry = zis.getNextEntry();
+		}
+		zis.closeEntry();
+		zis.close();
+	}
+
+	public static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+		File destFile = new File(destinationDir, zipEntry.getName());
+
+		String destDirPath = destinationDir.getCanonicalPath();
+		String destFilePath = destFile.getCanonicalPath();
+
+		if (!destFilePath.startsWith(destDirPath + File.separator)) {
+			throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+		}
+
+		return destFile;
+	}
+
 }
