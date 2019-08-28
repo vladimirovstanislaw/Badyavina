@@ -43,78 +43,77 @@ public class Runable {
 			File folderCentral = new File(pathToSaveCentralFiles);
 			File folderOther = new File(pathToSaveOtherFiles);
 
-			
-			
 //									    ||
 //									    ||
-			//Uncomment that after test ||
+			// Uncomment that after test ||
 //									   \  /
 //										\/
-			
 
-			
-//			GmailQuickstart gmail = new GmailQuickstart(pathToSaveCentralFiles, pathToSaveOtherFiles,
-//					emailCentralProvider, emailOtherProvider);
-//
-//			
-//
-//			GmailQuickstart.clearFolder(folderCentral);// очищаем папку central provider'a
-//			GmailQuickstart.clearFolder(folderOther);// очищаем папку other provider'a
-//
-//			gmail.run();
+			GmailQuickstart gmail = new GmailQuickstart(pathToSaveCentralFiles, pathToSaveOtherFiles,
+					emailCentralProvider, emailOtherProvider);
 
-			String lastFileOtherProvider = getLastModifiedFileNameByType(OTHER_TYPE);
+			GmailQuickstart.clearFolder(folderCentral);// очищаем папку central provider'a
+			GmailQuickstart.clearFolder(folderOther);// очищаем папку other provider'a
+
+			gmail.run();
 
 			String lastFileCentralProvider = getLastModifiedFileNameByType(CENTRAL_TYPE);
+			String lastFileOtherProvider = getLastModifiedFileNameByType(OTHER_TYPE);
 
-			// Парсим файл поставщика по-меньше
-			OhterProviderParser otherParser = OhterProviderParser.getInstance();
-			otherParser.setFilenameFrom(lastFileOtherProvider.toString()); // мапа с данными от другого поставщика
-			Map<String, OtherProviderRow> otherMap = otherParser.Parse();
-
-			// Парсим файл центрального поставщика
-			CentralProviderParser centralParser = CentralProviderParser.getInstance();
-			centralParser.setFilenameFrom(lastFileCentralProvider.toString());
-			Map<String, CentralProviderRow> centralMap = centralParser.Parse(); // мапа с данными от центрального
-																				// поставщика
-
-			// находим пересечение карт
-			Collection<String> intersection = CollectionUtils.intersection(otherMap.keySet(), centralMap.keySet());
-
-			Map<String, AllDataRow> allDataMap = new HashMap<String, AllDataRow>();
-
-			// добавляем пересечение
-			intersection.stream().forEach(e -> {
-				// Создаем объект
-				AllDataRow tmpRow = new AllDataRow();
-				// Вставляем код
-				tmpRow.setCode(e.toString());
-				// Вставляем имя
-				tmpRow.setName(otherMap.get(e.toString()).getName());
-				// Вставляем остатки
-				tmpRow.setLeftOver(otherMap.get(e.toString()).getLeftOver());
-				// Вставляем розничную цену
-				tmpRow.setRetailPrice(centralMap.get(e.toString()).getRetailPrice());
-				allDataMap.put(e.toString(), tmpRow);
-
-			});
-
-			// Конфигурируем файл номенклатуры
-			Nomenclature nomenclature = Nomenclature.getInstanceNomenclature();
-			nomenclature.setMapAsIs(allDataMap);
-			nomenclature.configureNomenclatureMap();
-			Date date = new Date();
-			nomenclature.writeFile(path_to + "\\Nomenclature_" + date.getDate() + "_" + date.getMonth() + "_"
-					+ (date.getYear() + 1900) + ".csv");
-			// Конфигурируем файл выгрузки
-			Upload upload = Upload.getInstanceUpload();
-			upload.setMapAsIs(allDataMap);
-			upload.configureUploadMap();
-			upload.writeFile(path_to + "\\" + fileNameUpload);
-			// Высылаем выгрузку
-			Sender sender = new Sender();
-			sender.setData(path_from, fileNameUpload);
-			sender.send();
+			
+			
+			System.out.println("Resolved name of central provider file:"+lastFileCentralProvider);
+			System.out.println("Resolved name of other provider file:"+lastFileOtherProvider);
+			
+//
+//			// Парсим файл поставщика по-меньше
+//			OhterProviderParser otherParser = OhterProviderParser.getInstance();
+//			otherParser.setFilenameFrom(lastFileOtherProvider.toString()); // мапа с данными от другого поставщика
+//			Map<String, OtherProviderRow> otherMap = otherParser.Parse();
+//
+//			// Парсим файл центрального поставщика
+//			CentralProviderParser centralParser = CentralProviderParser.getInstance();
+//			centralParser.setFilenameFrom(lastFileCentralProvider.toString());
+//			Map<String, CentralProviderRow> centralMap = centralParser.Parse(); // мапа с данными от центрального
+//																				// поставщика
+//
+//			// находим пересечение карт
+//			Collection<String> intersection = CollectionUtils.intersection(otherMap.keySet(), centralMap.keySet());
+//
+//			Map<String, AllDataRow> allDataMap = new HashMap<String, AllDataRow>();
+//
+//			// добавляем пересечение
+//			intersection.stream().forEach(e -> {
+//				// Создаем объект
+//				AllDataRow tmpRow = new AllDataRow();
+//				// Вставляем код
+//				tmpRow.setCode(e.toString());
+//				// Вставляем имя
+//				tmpRow.setName(otherMap.get(e.toString()).getName());
+//				// Вставляем остатки
+//				tmpRow.setLeftOver(otherMap.get(e.toString()).getLeftOver());
+//				// Вставляем розничную цену
+//				tmpRow.setRetailPrice(centralMap.get(e.toString()).getRetailPrice());
+//				allDataMap.put(e.toString(), tmpRow);
+//
+//			});
+//
+//			// Конфигурируем файл номенклатуры
+//			Nomenclature nomenclature = Nomenclature.getInstanceNomenclature();
+//			nomenclature.setMapAsIs(allDataMap);
+//			nomenclature.configureNomenclatureMap();
+//			Date date = new Date();
+//			nomenclature.writeFile(path_to + "\\Nomenclature_" + date.getDate() + "_" + date.getMonth() + "_"
+//					+ (date.getYear() + 1900) + ".csv");
+//			// Конфигурируем файл выгрузки
+//			Upload upload = Upload.getInstanceUpload();
+//			upload.setMapAsIs(allDataMap);
+//			upload.configureUploadMap();
+//			upload.writeFile(path_to + "\\" + fileNameUpload);
+//			// Высылаем выгрузку
+//			Sender sender = new Sender();
+//			sender.setData(path_from, fileNameUpload);
+//			sender.send();
 
 			System.out.println("Выход [Enter]: ");
 		} else {
@@ -136,7 +135,7 @@ public class Runable {
 		}
 		File[] matchingFiles = folder.listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
-				System.out.println(dir.toString()+name);
+
 				return name.endsWith(".xls");
 			}
 		});

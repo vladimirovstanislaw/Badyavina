@@ -32,6 +32,7 @@ import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
 import com.google.api.services.gmail.model.MessagePart;
 import com.google.api.services.gmail.model.MessagePartBody;
+import com.google.api.services.gmail.model.MessagePartHeader;
 
 public class GmailQuickstart {
 
@@ -40,6 +41,8 @@ public class GmailQuickstart {
 	private static final String TOKENS_DIRECTORY_PATH = "tokens";
 	private static final List<String> list = new ArrayList<String>(
 			Arrays.asList(GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_READONLY, GmailScopes.GMAIL_MODIFY));
+	private final String CENTRAL_TYPE = "CENTRAL";
+	private final String OTHER_TYPE = "OTHER";
 
 	private static final List<String> SCOPES = list;
 	private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
@@ -82,33 +85,73 @@ public class GmailQuickstart {
 		Gmail service = new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredential(HTTP_TRANSPORT))
 				.setApplicationName(APPLICATION_NAME).build();
 		String user = "me";
-		String email_from = "katherinaa@mail.ru";
-		String query = "from:katherinaa@mail.ru";
-		String query_me = "from:me";
-		String pathToSaveFiles_d = "C:\\vianor_stock\\tmp\\";
 
 		String queryFromCentralProvider = "from:" + emailCentralProvider;
 		String queryFromOtherProvider = "from:" + emailOtherProvider;
+		System.out.println(queryFromCentralProvider);
+		System.out.println(queryFromOtherProvider);
 
 		ArrayList<Message> messageListCentral = listMessagesMatchingQuery(service, user, queryFromCentralProvider);
-		getFiles(service, user, messageListCentral, pathToSaveCentralFiles + "\\");
+		getFiles(service, user, messageListCentral, pathToSaveCentralFiles + "\\", CENTRAL_TYPE);
 		ArrayList<Message> messageListOther = listMessagesMatchingQuery(service, user, queryFromOtherProvider);
-		getFiles(service, user, messageListOther, pathToSaveOtherFiles + "\\");
+		getFiles(service, user, messageListOther, pathToSaveOtherFiles + "\\", OTHER_TYPE);
 
 	}
 
-	public void getFiles(Gmail service, String userId, ArrayList<Message> list, String pathToSaveFiles)
+	public void getFiles(Gmail service, String userId, ArrayList<Message> list, String pathToSaveFiles, String type)
 			throws IOException {
-		String tmpIdWithAttachments = "16c9049ef5ae21b6";
+		Message lastMessage = null;
 
-		Message lastMessage = list.get(0);
+		if (type == CENTRAL_TYPE) {
+			ArrayList<Message> fullMessageList = new ArrayList<Message>();
+			for (int i = 0; i < 3; i++) {// Можно поменять
+				Message fullLastMessage_tmp = service.users().messages().get(userId, list.get(i).getId()).execute();
+				fullMessageList.add(fullLastMessage_tmp);
+			}
+			for (Message msg : fullMessageList) {
+				List<MessagePartHeader> headerList = msg.getPayload().getHeaders();
+				for (MessagePartHeader header : headerList) {
+					if (header.getName().equals("Subject")) {
+						if (header.getValue().contains("ШИНЫ")) {
+							lastMessage = msg;
+						}
+
+					}
+
+				}
+			}
+		}
+		if (type == OTHER_TYPE) {
+			ArrayList<Message> fullOtherMessageList = new ArrayList<Message>();
+			for (int i = 0; i < 2; i++) {// Можно поменять
+				Message fullLastMessage_tmp = service.users().messages().get(userId, list.get(i).getId()).execute();
+				fullOtherMessageList.add(fullLastMessage_tmp);
+			}
+			System.out.println("Type = " + type);
+			lastMessage = fullOtherMessageList.get(0);
+			for (Message msg : fullOtherMessageList) {
+
+				List<MessagePartHeader> otherHeaderList = msg.getPayload().getHeaders();
+				for (MessagePartHeader header : otherHeaderList) {
+					if (header.getName().equals("Subject")) {
+						System.out.println("Other emails subject value: " + header.getValue());
+
+					}
+					if (header.getName().equals("From")) {
+						System.out.println("Other emails from value: " + header.getValue());
+
+					}
+
+				}
+			}
+		}
+
+		if (lastMessage == null) {
+			System.out.println(type + " is null message.");
+		}
 		String lastMessageId = lastMessage.getId();
 
 		Message fullLastMessage = service.users().messages().get(userId, lastMessageId).execute();
-		System.out.println("=====================================");
-		System.out.println(fullLastMessage.getInternalDate());
-		System.out.println("=====================================");
-		System.out.println("Message snippet: " + fullLastMessage.getSnippet());
 
 		List<MessagePart> parts = fullLastMessage.getPayload().getParts();
 		for (MessagePart part : parts) {
@@ -145,11 +188,6 @@ public class GmailQuickstart {
 				break;
 			}
 		}
-
-//		for (Message message : messages) {
-//			System.out.println(message.toPrettyString());
-//		}
-		System.out.println(messages.get(0).toPrettyString());
 
 		return messages;
 	}
