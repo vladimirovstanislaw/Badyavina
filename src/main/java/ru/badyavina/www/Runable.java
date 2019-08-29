@@ -41,7 +41,8 @@ public class Runable {
 			String pathToSaveOtherFiles = args[4]; // куда будем класть выгрузку other provider'a
 			String emailCentralProvider = args[5]; // email cental provider
 			String emailOtherProvider = args[6]; // email other provider
-
+			String codeShini = args[7]; // email other provider
+			
 			otherProviderFilePath = pathToSaveOtherFiles;
 			centralProviderFilePath = pathToSaveCentralFiles;
 
@@ -55,7 +56,7 @@ public class Runable {
 //										\/
 
 			GmailQuickstart gmail = new GmailQuickstart(pathToSaveCentralFiles, pathToSaveOtherFiles,
-					emailCentralProvider, emailOtherProvider);
+					emailCentralProvider, emailOtherProvider,codeShini);
 
 			GmailQuickstart.clearFolder(folderCentral);// очищаем папку central provider'a
 			GmailQuickstart.clearFolder(folderOther);// очищаем папку other provider'a
@@ -104,7 +105,7 @@ public class Runable {
 
 			// Конфигурируем файл номенклатуры
 			Nomenclature nomenclature = Nomenclature.getInstanceNomenclature();
-			nomenclature.setMapAsIs(allDataMap);
+			nomenclature.setMapAsIs(centralMap);
 			nomenclature.configureNomenclatureMap();
 			Date date = new Date();
 			nomenclature.writeFile(path_to + "\\Nomenclature_" + date.getDate() + "_" + date.getMonth() + "_"

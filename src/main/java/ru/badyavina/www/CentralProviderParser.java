@@ -85,11 +85,21 @@ public class CentralProviderParser {
 			if (row.getCell(13).toString().equals("")) {
 				continue;
 			}
+			if (row.getCell(9) == null) {
+				continue;
+			}
+			if (row.getCell(9).getCellType() == Cell.CELL_TYPE_BLANK) {
+				continue;
+			}
+			if (row.getCell(9).toString().equals("")) {
+				continue;
+			}
 
 			CentralProviderRow tmpRow = new CentralProviderRow();
 			tmpRow.setCode(row.getCell(7).toString());
 			tmpRow.setRetailPrice(row.getCell(13).toString());
-
+			tmpRow.setName(row.getCell(9).toString());
+			
 			asIsCentralProviderMap.put(tmpRow.getCode(), tmpRow);
 			countAllRows++;
 

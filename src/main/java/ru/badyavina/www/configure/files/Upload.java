@@ -15,7 +15,7 @@ import ru.badyavina.www.rows.RowUpload;
 
 public class Upload {
 	private static Upload upload = new Upload();
-	private static final String n = "\n";
+	private static final String n = "\r\n";
 	private static final String colon = ";";
 	Map<String, AllDataRow> allDataMap = null;
 	Map<String, RowUpload> mapUpload = null;

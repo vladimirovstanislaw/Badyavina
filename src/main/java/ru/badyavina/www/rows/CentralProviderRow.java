@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 public class CentralProviderRow {
 	String code;
 	String retailPrice;
+	String name;
 	private static final Pattern p = Pattern.compile(",|.[0-9]*( )*$");
 	private static Matcher m = null;
 	private static final String replaceWith = "";
@@ -14,10 +15,11 @@ public class CentralProviderRow {
 		super();
 	}
 
-	public CentralProviderRow(String code, String retailPrice) {
+	public CentralProviderRow(String code, String retailPrice, String name) {
 		super();
 		this.code = code;
 		this.retailPrice = retailPrice;
+		this.name = name;
 	}
 
 	public String getCode() {
@@ -26,6 +28,14 @@ public class CentralProviderRow {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getRetailPrice() {

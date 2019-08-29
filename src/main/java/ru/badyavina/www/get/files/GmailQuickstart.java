@@ -38,29 +38,27 @@ public class GmailQuickstart {
 
 	private static final String APPLICATION_NAME = "Gmail API Java Quickstart";
 	private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-	private static final String TOKENS_DIRECTORY_PATH = "tokens";
+	private static final String TOKENS_DIRECTORY_PATH = "C:/vianor_stock/tokens";
 	private static final List<String> list = new ArrayList<String>(
 			Arrays.asList(GmailScopes.GMAIL_LABELS, GmailScopes.GMAIL_READONLY, GmailScopes.GMAIL_MODIFY));
 	private final String CENTRAL_TYPE = "CENTRAL";
 	private final String OTHER_TYPE = "OTHER";
 
 	private static final List<String> SCOPES = list;
-	private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
-	private static final String CREDENTIALS_FILE_PATH_WEB = "/(web)client_id.json";
-	private static final String CREDENTIALS_FILE_PATH_JOHNY = "/service-key.json";
 	private static final String CREDENTIALS_FILE_PATH_OTHER_APP_BAD = "/other_app_bad.json";
-	private static final String CREDENTIALS_FILE_PATH_OTHER_APP = "/other_app.json";
 	private final String pathToSaveCentralFiles;
 	private final String pathToSaveOtherFiles;
 	private final String emailCentralProvider;
 	private final String emailOtherProvider;
+	private final String codeShini;
 
 	public GmailQuickstart(String pathToSaveCentralFiles, String pathToSaveOtherFiles, String emailCentralProvider,
-			String emailOtherProvider) {
+			String emailOtherProvider,String codeShini) {
 		this.pathToSaveCentralFiles = pathToSaveCentralFiles;
 		this.pathToSaveOtherFiles = pathToSaveOtherFiles;
 		this.emailCentralProvider = emailCentralProvider;
 		this.emailOtherProvider = emailOtherProvider;
+		this.codeShini=codeShini;
 	}
 
 	private static Credential getCredential(final NetHttpTransport HTTP_TRANSPORT) throws IOException {
@@ -101,25 +99,32 @@ public class GmailQuickstart {
 		Message lastMessage = null;
 
 		if (type == CENTRAL_TYPE) {
+			System.out.println("Input list size = "+list.size());
 			ArrayList<Message> fullMessageList = new ArrayList<Message>();
-			ArrayList<Message> fullMessageLastList = new ArrayList<Message>();
-			for (int i = 0; i < 3; i++) {// Можно поменять
+			ArrayList<Message> fullMessageSubjList = new ArrayList<Message>();
+			for (int i = 0; i < 5; i++) {// Можно поменять
 				Message fullLastMessage_tmp = service.users().messages().get(userId, list.get(i).getId()).execute();
 				fullMessageList.add(fullLastMessage_tmp);
 			}
+			System.out.println("fullMessageList list size = "+fullMessageList.size());
+			
+
+			
+			
 			for (Message msg : fullMessageList) {
 				List<MessagePartHeader> headerList = msg.getPayload().getHeaders();
 				for (MessagePartHeader header : headerList) {
 					if (header.getName().equals("Subject")) {
-						if (header.getValue().contains("ШИНЫ")) {
-							fullMessageLastList.add(msg);
+						System.out.println("subject : "+header.getName()+"  "+header.getValue());
+						if (header.getValue().contains(this.codeShini)) {
+							System.out.println("We have some email with ШИНЫ in subject" + header.getValue());
+							fullMessageSubjList.add(msg);
 						}
-
 					}
-
 				}
 			}
-			lastMessage = fullMessageLastList.get(0);
+			System.out.println("fullMessageSubjList list size = "+fullMessageSubjList.size());
+			lastMessage = fullMessageSubjList.get(0);
 		}
 		if (type == OTHER_TYPE) {
 			ArrayList<Message> fullOtherMessageList = new ArrayList<Message>();

@@ -20,7 +20,7 @@ public class confOnly {
  
  
  #maven
- cd C:\Users\svladimirov\eclipse-workspace\ru.badyavina.www
+  cd C:/Users/svladimirov/eclipse-workspace/bad/Badyavina
  mvn clean compile assembly:single
 
 

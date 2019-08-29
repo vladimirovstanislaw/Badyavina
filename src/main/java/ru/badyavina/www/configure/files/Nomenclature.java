@@ -8,15 +8,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ru.badyavina.www.rows.AllDataRow;
+import ru.badyavina.www.rows.CentralProviderRow;
 
 public class Nomenclature {
 	private static Nomenclature nomenclature = new Nomenclature();
-	private static final String n = "\n";
+	private static final String n = "\r\n";
 	private static final String colon = ";";
 	private static final String replaceWith = "";
 	private final Pattern p = Pattern.compile("( )*$");
 
-	Map<String, AllDataRow> allDataMap;
+	Map<String, CentralProviderRow> centralDataMap;
 	Map<String, String> mapNomenclature;
 	String finalData;
 
@@ -30,13 +31,13 @@ public class Nomenclature {
 		return nomenclature;
 	}
 
-	public void setMapAsIs(Map<String, AllDataRow> map) {
-		this.allDataMap = map;
+	public void setMapAsIs(Map<String, CentralProviderRow> map) {
+		this.centralDataMap = map;
 	}
 
 	public void configureNomenclatureMap() {
-		if (allDataMap != null) {
-			allDataMap.entrySet().stream().forEach(e->{
+		if (centralDataMap != null) {
+			centralDataMap.entrySet().stream().forEach(e->{
 				mapNomenclature.put(e.getKey(),e.getValue().getName());
 			});
 					
